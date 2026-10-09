@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+MP3输出/
+diagnostics/
+keys.json
+song-diagnostic*.json
+*.mp3
+*.flac
+*.mflac
+*.mgg
+*.ncm
+*.wav
+.env
