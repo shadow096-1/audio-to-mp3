@@ -6,15 +6,17 @@ Batch-convert NCM, supported MFLAC/MGG and ordinary audio to MP3 on Windows 10/1
 
 ## Use
 
-1. Download `AudioToMP3.zip` from [Releases](https://github.com/shadow096-1/audio-to-mp3/releases) and extract **the entire archive** to a writable folder.
+1. Open [v1.1.0 downloads](https://github.com/shadow096-1/audio-to-mp3/releases/tag/v1.1.0), choose **English**, and extract **the entire archive** to a writable folder.
 2. Double-click `start_windows.bat`. Your browser opens the local interface.
 3. Drop audio files or select a folder. Conversion starts automatically. Choose 128/192/256/320 kbps; results are saved to `MP3输出` by default.
 
 NCM and ordinary FLAC work offline. Newer musicex MFLAC/MGG needs QQ Music running and signed in to an account with playback/download rights for the song. Automatic ekey retrieval can fail on unsupported versions; retry or supply the resource-specific ekey manually. Unknown encrypted formats are not supported. MP3 is lossy; transcoding cannot restore quality.
 
+The separate packages are **Chinese-Simplified-zh-CN**, **Chinese-Traditional-zh-TW**, **English**, and **Japanese**. Download only one; each is the complete app with the matching language preselected. **Source code** archives do not include the runtime.
+
 ## Languages
 
-Simplified Chinese, Traditional Chinese, English and Japanese are available in the top-right language selector. The first visit follows your browser language, falling back to English. Switching preserves jobs, bitrate and the ekey currently being entered. Your manual choice is saved in `preferences.json` next to the app, even when its local port changes. That file stores only the language code. A read-only folder prevents persistence but not switching.
+Simplified Chinese, Traditional Chinese, English and Japanese are available in the top-right language selector. Choose the **English** archive for English on first launch. Only the optional **Auto-Language** archive follows the browser language with English fallback. Switching preserves jobs, bitrate and the ekey currently being entered. Your manual choice is saved in `preferences.json` next to the app, even when its local port changes. That file stores only the language code. A read-only folder prevents persistence but not switching.
 
 App labels, statuses, prompts and app-owned errors are localized. Filenames, tags, resource identifiers, the output directory and raw decoder logs are preserved.
 
