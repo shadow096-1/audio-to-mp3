@@ -1,5 +1,7 @@
 # 音频转 MP3 · Windows 懒人包
 
+简体中文 · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md)
+
 Windows 10/11 x64 批量音频转换工具，支持 NCM、常见 MFLAC/MGG、FLAC 等格式。内置 Python、FFmpeg 和 Xiph FLAC，不需要安装运行环境。
 
 ## 下载与使用
@@ -11,6 +13,20 @@ Windows 10/11 x64 批量音频转换工具，支持 NCM、常见 MFLAC/MGG、FLA
 3. 拖入音频，加入后自动转换。MP3 默认保存在 `MP3输出`，码率可选 128/192/256/320 kbps。
 
 转换新版 musicex MFLAC/MGG 时，需要让电脑上的 QQ 音乐保持运行，并登录有该歌曲播放或下载权限的账号。程序默认尝试自动获取对应资源的 ekey，失败时可以自动重试或手动填写。
+
+## 多语言支持
+
+支持简体中文、繁體中文、English、日本語。首次打开时根据浏览器语言自动选择，不匹配时使用英语。右上角「语言」可即时切换；转换任务、输入的 ekey 和码率选择不会因切换而清空。
+
+手动选择会保存到软件目录的 `preferences.json`，仅包含语言代码，重启或更换本地端口后仍生效。目录不可写时会提示，当前会话仍可切换。文件名、歌曲标签、输出目录、资源名和第三方解码器的原始日志保持原样；界面、状态、应用报错和安全提示随语言切换。
+
+命令行支持 `--lang zh-CN|zh-TW|en|ja`，也可用 `AUDIO_TO_MP3_LANG` 环境变量；未指定时使用系统语言，不支持的语言回退到英语。例如：
+
+```sh
+python converter.py --lang en "song.ncm" -o output
+```
+
+旧版 Release ZIP 尚不包含这些新增源码。已下载懒人包的用户，需同时更新 `server.py`、`converter.py`、`webui.html`，并添加 `i18n.py` 和 `locales.json`。不要只替换 HTML。
 
 ## 支持范围
 
@@ -43,8 +59,13 @@ Windows 10/11 x64 批量音频转换工具，支持 NCM、常见 MFLAC/MGG、FLA
 
 ```sh
 python server.py
-python -m unittest test_converter test_auto_ekey test_server
+python -m unittest test_converter test_auto_ekey test_server test_i18n
+node test_ui.cjs
 ```
+
+### 添加翻译
+
+`locales.json` 是唯一翻译源。`ui` 使用语义键和 `{name}` 占位符；`messages` 以历史中文消息为兼容键，覆盖后端应用报错。新增文本时同时补齐四种语言，不要翻译文件路径、文件名、技术标识或密钥。`test_i18n.py` 检查键与占位符一致性、后端消息覆盖、接口语言隔离和偏好保存；`test_ui.cjs` 无需 npm 依赖，检查实时切换及任务数据保留。
 
 ## 许可证
 

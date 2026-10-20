@@ -12,3 +12,7 @@ song-diagnostic*.json
 *.ncm
 *.wav
 .env
+
+preferences.json
+.language-*
+vendor/

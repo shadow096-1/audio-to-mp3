@@ -18,10 +18,18 @@ import webbrowser
 from converter import (ROOT, PLAIN, ENCRYPTED, Cancelled, ConversionError,
                        convert_one, find_ffmpeg, musicex_info, checkpoint)
 from auto_ekey import AutoFetcher
+from i18n import CATALOG, LANGUAGES, normalize_language, localize_payload
 
 
 class State:
-    def __init__(self, output=None, ffmpeg=None, fetcher=None):
+    def __init__(self, output=None, ffmpeg=None, fetcher=None, preferences_path=None):
+        self.preferences_path = Path(preferences_path or ROOT / 'preferences.json')
+        try:
+            saved = json.loads(self.preferences_path.read_text(encoding='utf-8'))
+            preferred = saved.get('language') if isinstance(saved, dict) else None
+            self.language = preferred if preferred in LANGUAGES else None
+        except (OSError, ValueError):
+            self.language = None
         self.output = Path(output or ROOT / 'MP3输出').resolve()
         self.output.mkdir(parents=True, exist_ok=True)
         self.ffmpeg = find_ffmpeg(ffmpeg)
@@ -35,11 +43,31 @@ class State:
         self.worker = threading.Thread(target=self.run, daemon=True)
         self.worker.start()
 
+    def save_language(self, language):
+        if language not in LANGUAGES:
+            raise ConversionError('语言无效。')
+        # Persist only the language. No session, key, token or audio data.
+        with self.lock:
+            temp = None
+            try:
+                with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8',
+                        dir=self.preferences_path.parent, prefix='.language-',
+                        delete=False) as f:
+                    temp = Path(f.name)
+                    json.dump({'language': language}, f)
+                os.replace(temp, self.preferences_path)
+                self.language = language
+            except OSError:
+                raise ConversionError('无法保存语言设置。') from None
+            finally:
+                if temp is not None:
+                    temp.unlink(missing_ok=True)
+
     def snapshot(self):
         with self.lock:
             return {'output': str(self.output), 'jobs': [
-                {k: v for k, v in job.items() if k in
-                 ('id', 'name', 'status', 'message', 'info', 'result', 'bitrate')}
+                dict(message_source=job.get('message', ''), **{k: v for k, v in job.items() if k in
+                 ('id', 'name', 'status', 'message', 'info', 'result', 'bitrate')})
                 for job in self.jobs.values()]}
 
     def run(self):
@@ -112,7 +140,10 @@ def make_handler(state):
             self.close_connection = True
 
         def respond(self, data, code=200):
-            self.send_bytes(json.dumps(data, ensure_ascii=False).encode('utf-8'), code=code)
+            if isinstance(data, dict) and isinstance(data.get('error'), str):
+                data = dict(data, error_source=data['error'])
+            language = normalize_language(self.headers.get('X-App-Language'), 'zh-CN')
+            self.send_bytes(json.dumps(localize_payload(data, language), ensure_ascii=False).encode('utf-8'), code=code)
 
         def authenticated(self, params):
             host = f'127.0.0.1:{self.server.server_port}'
@@ -130,6 +161,10 @@ def make_handler(state):
                 return
             if parts.path == '/':
                 data = (ROOT / 'webui.html').read_bytes().replace(b'__APP_TOKEN__', state.token.encode('ascii'))
+                catalogs = json.dumps(CATALOG, ensure_ascii=False).replace('<', '\u003c')
+                preferred = json.dumps(state.language)
+                data = data.replace(b'__APP_TRANSLATIONS__', catalogs.encode('utf-8'))
+                data = data.replace(b'__APP_PREFERRED_LANGUAGE__', preferred.encode('utf-8'))
                 self.send_bytes(data, 'text/html; charset=utf-8')
             elif parts.path == '/status':
                 self.respond(state.snapshot())
@@ -173,7 +208,10 @@ def make_handler(state):
                 data = json.loads(self.rfile.read(length) or b'{}')
                 if not isinstance(data, dict):
                     raise ConversionError('请求无效。')
-                if parts.path == '/cancel':
+                if parts.path == '/language':
+                    state.save_language(data.get('language'))
+                    self.respond({'ok': True, 'language': state.language})
+                elif parts.path == '/cancel':
                     with state.lock:
                         for job in state.jobs.values():
                             if job['status'] in ('queued', 'converting', 'fetching'):
