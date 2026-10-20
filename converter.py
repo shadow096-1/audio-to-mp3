@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import argparse
+import locale
+from i18n import CATALOG, LANGUAGES, normalize_language, translate
 import base64
 import json
 import io
@@ -470,13 +472,19 @@ def convert_one(source, output, bitrate=320, ffmpeg=None, keys=None, cancel=None
 
 
 def main():
-    parser = argparse.ArgumentParser(description='本地批量音频转 MP3（NCM、部分 MFLAC/MGG、普通音频）')
-    parser.add_argument('inputs', nargs='+', help='文件或文件夹')
-    parser.add_argument('-o', '--output', required=True, help='输出文件夹')
-    parser.add_argument('-r', '--recursive', action='store_true', help='扫描子文件夹')
+    pre = argparse.ArgumentParser(add_help=False)
+    pre.add_argument('--lang')
+    preliminary, _ = pre.parse_known_args()
+    language = normalize_language(preliminary.lang or os.environ.get('AUDIO_TO_MP3_LANG') or locale.getlocale()[0])
+    tr = lambda text: translate(text, language)
+    parser = argparse.ArgumentParser(description=tr('本地批量音频转 MP3（NCM、部分 MFLAC/MGG、普通音频）'))
+    parser.add_argument('inputs', nargs='+', help=tr('文件或文件夹'))
+    parser.add_argument('-o', '--output', required=True, help=tr('输出文件夹'))
+    parser.add_argument('-r', '--recursive', action='store_true', help=tr('扫描子文件夹'))
     parser.add_argument('-b', '--bitrate', type=int, choices=(128, 192, 256, 320), default=320)
-    parser.add_argument('--ffmpeg', help='FFmpeg 程序路径')
-    parser.add_argument('--keys', help='可选 JSON 密钥配置')
+    parser.add_argument('--ffmpeg', help=tr('FFmpeg 程序路径'))
+    parser.add_argument('--keys', help=tr('可选 JSON 密钥配置'))
+    parser.add_argument('--lang', choices=LANGUAGES, help=CATALOG[language]['ui']['cliLang'])
     args = parser.parse_args()
     try:
         ffmpeg = find_ffmpeg(args.ffmpeg)
@@ -485,17 +493,17 @@ def main():
         if not files:
             raise ConversionError('未找到支持的音频文件。')
     except ConversionError as e:
-        print(f'错误：{e}', file=sys.stderr)
+        print(tr('错误：') + tr(str(e)), file=sys.stderr)
         return 2
     failures = 0
     for index, source in enumerate(files, 1):
         try:
             target = convert_one(source, args.output, args.bitrate, ffmpeg, keys)
-            print(f'[{index}/{len(files)}] 成功：{source.name} → {target}')
+            print(tr(f'[{index}/{len(files)}] 成功：') + f'{source.name} → {target}')
         except Exception as e:
             failures += 1
-            print(f'[{index}/{len(files)}] 失败：{source.name}：{e}', file=sys.stderr)
-    print(f'完成：成功 {len(files) - failures}，失败 {failures}')
+            print(tr(f'[{index}/{len(files)}] 失败：') + f'{source.name}: ' + tr(str(e)), file=sys.stderr)
+    print(tr('完成：成功 ') + str(len(files) - failures) + tr('，失败 ') + str(failures))
     return 1 if failures else 0
 
 

@@ -155,7 +155,7 @@ class ConversionTests(unittest.TestCase):
         (self.work / 'bad.ncm').write_bytes(b'bad')
         (self.work / 'notes.txt').write_text('ignore')
         self.assertEqual(len(discover([self.work, self.work / 'good.ncm'])), 2)
-        result = subprocess.run([sys.executable, str(Path(__file__).with_name('converter.py')),
+        result = subprocess.run([sys.executable, str(Path(__file__).with_name('converter.py')), '--lang', 'zh-CN',
             str(self.work), '-o', str(self.out)], capture_output=True, text=True)
         self.assertEqual(result.returncode, 1)
         self.assertIn('成功 1，失败 1', result.stdout)
