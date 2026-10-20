@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import locale
+from version import __version__
 from i18n import CATALOG, LANGUAGES, normalize_language, translate
 import base64
 import json
@@ -485,6 +486,7 @@ def main():
     parser.add_argument('--ffmpeg', help=tr('FFmpeg 程序路径'))
     parser.add_argument('--keys', help=tr('可选 JSON 密钥配置'))
     parser.add_argument('--lang', choices=LANGUAGES, help=CATALOG[language]['ui']['cliLang'])
+    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     args = parser.parse_args()
     try:
         ffmpeg = find_ffmpeg(args.ffmpeg)

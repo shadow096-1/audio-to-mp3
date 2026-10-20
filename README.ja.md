@@ -22,7 +22,7 @@ Windows 10/11 x64 向けの一括音声変換ツールです。NCM、対応す�
 
 CLI の例：`python converter.py --lang ja song.ncm -o output`。言語コード：`zh-CN`、`zh-TW`、`en`、`ja`。環境変数 `AUDIO_TO_MP3_LANG` でも指定でき、未指定時はシステム言語、未対応時は英語を使用します。
 
-**既存の古い Release ZIP には、この多言語化のソースはまだ含まれていません。** 既存のポータブル版を更新する場合は `server.py`、`converter.py`、`webui.html` を置き換え、`i18n.py`、`locales.json` を一緒に追加してください。ランタイム、実行ファイル、vendor は保持します。
+Releases から **v1.1.0** の完全なポータブル版をダウンロードすると、4 言語を使用できます。更新時は旧アプリを終了し、新しいフォルダーにすべて展開してください。元の音声と既存の MP3 出力は変更しません。HTML だけの置き換えは避けてください。
 
 ## データと注意点
 

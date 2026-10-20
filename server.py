@@ -18,6 +18,7 @@ import webbrowser
 from converter import (ROOT, PLAIN, ENCRYPTED, Cancelled, ConversionError,
                        convert_one, find_ffmpeg, musicex_info, checkpoint)
 from auto_ekey import AutoFetcher
+from version import __version__
 from i18n import CATALOG, LANGUAGES, normalize_language, localize_payload
 
 
@@ -165,6 +166,7 @@ def make_handler(state):
                 preferred = json.dumps(state.language)
                 data = data.replace(b'__APP_TRANSLATIONS__', catalogs.encode('utf-8'))
                 data = data.replace(b'__APP_PREFERRED_LANGUAGE__', preferred.encode('utf-8'))
+                data = data.replace(b'__APP_VERSION__', __version__.encode('ascii'))
                 self.send_bytes(data, 'text/html; charset=utf-8')
             elif parts.path == '/status':
                 self.respond(state.snapshot())

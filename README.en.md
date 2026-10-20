@@ -20,7 +20,7 @@ App labels, statuses, prompts and app-owned errors are localized. Filenames, tag
 
 CLI: `python converter.py --lang en song.ncm -o output`. Languages: `zh-CN`, `zh-TW`, `en`, `ja`. You can also set `AUDIO_TO_MP3_LANG`; otherwise the system locale is used, with English fallback.
 
-**The older release ZIP does not contain the new multilingual sources yet.** To update an existing portable installation, replace `server.py`, `converter.py`, `webui.html` and add `i18n.py`, `locales.json` together. Keep its bundled runtime, binaries and vendor libraries.
+Download the complete **v1.1.0** portable package from Releases for all four languages. To upgrade, exit the old app and extract the new package to a new folder. Your original audio and existing MP3 outputs are preserved. Do not update only the HTML file.
 
 ## Privacy and limitations
 

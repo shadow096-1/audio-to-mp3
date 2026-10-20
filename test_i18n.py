@@ -110,6 +110,8 @@ class LocalizedHTTPTests(unittest.TestCase):
         self.assertIn('PREFERRED_LANGUAGE="ja"', html)
         self.assertNotIn('__APP_TRANSLATIONS__', html)
         self.assertNotIn('__APP_TOKEN__', html)
+        self.assertNotIn('__APP_VERSION__', html)
+        self.assertIn('v1.1.0', html)
         match = re.search(r'<script id="localeData" type="application/json">(.*?)</script>', html, re.S)
         self.assertEqual(json.loads(match[1]), CATALOG)
 

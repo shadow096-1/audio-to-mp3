@@ -26,7 +26,7 @@ Windows 10/11 x64 批次音訊轉換工具，支援 NCM、常見 MFLAC/MGG、FLA
 python converter.py --lang en "song.ncm" -o output
 ```
 
-舊版 Release ZIP 尚不包含這些新增原始碼。已下載懶人包的使用者，需同時更新 `server.py`、`converter.py`、`webui.html`，並新增 `i18n.py` 和 `locales.json`。不要只替換 HTML。
+從 Releases 下載 **v1.1.0** 的完整懶人包即可使用四種語言。升級時請先退出舊程式，再將新版完整解壓到新資料夾；原音訊和既有 MP3 輸出不會被改動。請勿只替換 HTML。
 
 ## 支援範圍
 
@@ -39,11 +39,11 @@ python converter.py --lang en "song.ncm" -o output
 | FLAC、MP3、WAV、OGG、M4A、AAC、OPUS、WMA、AIFF、APE | FFmpeg 支援的普通音訊 |
 | 未知加密格式 | 暫不支援 |
 
-## v4 改進
+## FLAC 解碼校驗
 
-部分 FLAC 在完整音訊流後包含額外非音訊尾部，嚴格解碼時會出現 `invalid sync code`。v4 使用 Xiph FLAC 解碼器；遇到尾部同步錯誤時，只有實際取樣數、PCM 音訊 MD5 和引數全部匹配、且錯誤發生在完整音訊之後，才接受結果。中途壞幀、取樣不足或校驗失敗會停止轉換。
+部分 FLAC 在完整音訊流後包含額外非音訊尾部，嚴格解碼時會出現 `invalid sync code`。程式使用 Xiph FLAC 解碼器；遇到尾部同步錯誤時，只有實際取樣數、PCM 音訊 MD5 和引數全部匹配、且錯誤發生在完整音訊之後，才接受結果。中途壞幀、取樣不足或校驗失敗會停止轉換。
 
-已透過 31 項測試及真實 MFLAC 樣本的完整轉碼與 MP3 解碼檢查。共用程式碼在 Linux 驗證，Windows 包使用上游官方 x64 程式；不同 Windows 和 QQ 音樂客戶端版本仍可能存在相容性差異。
+已透過 40 項測試及真實 MFLAC 樣本的完整轉碼與 MP3 解碼檢查。共用程式碼在 Linux 驗證，Windows 包使用上游官方 x64 程式；不同 Windows 和 QQ 音樂客戶端版本仍可能存在相容性差異。
 
 ## 資料與執行方式
 
